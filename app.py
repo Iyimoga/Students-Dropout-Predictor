@@ -35,7 +35,7 @@ comparison = art["comparison"]
 st.title("Student Dropout Predictor")
 st.caption(
     "Predicting dropout risk for Nigerian university students · "
-    "Undergraduate Final Year Project"
+    "By IYIMOGA JOSEPH NANA"
 )
 
 tab1, tab2, tab3 = st.tabs(["Predict", "Model Comparison", "ℹAbout"])
@@ -307,33 +307,5 @@ with tab3:
         | 6 | 2nd Semester Performance | Courses registered, passed, average score |
         | 7 | Economic Context | Inflation rate |
 
-        #### Grade scale conversion
-
-        The model was trained on the Portuguese **0–20** grade scale.
-        The app lets you enter your score as a Nigerian **percentage (0–100)**
-        and converts it internally:
-
-        > Portuguese grade = Percentage ÷ 5
-
-        For example: **75%** → 15.0 (A), **50%** → 10.0 (Pass), **40%** → 8.0 (Fail).
-
-        #### Methodology
-
-        1. Data cleaning (duplicates, outliers, ambiguous classes removed)
-        2. Feature selection using Mutual Information (kept 24 of 34 features)
-        3. Standard scaling of numeric features
-        4. Training and 5-fold cross-validation of three models
-        5. Deployment with Streamlit
-
-        #### Honest limitations
-
-        - Training data is from a **Portuguese** university, not a Nigerian one.
-          The Nigerian labels in this app map to the closest Portuguese
-          categories, but the model would need retraining on real Nigerian
-          university data for production use.
-        - The model uses **first-year** performance data, so it predicts dropout
-          *after* the first academic year, not at admission time.
-        - Nigerian inflation rates (25–35%) fall outside the training range
-          (-1% to 4%), which reduces prediction reliability for very recent years.
         """
     )
