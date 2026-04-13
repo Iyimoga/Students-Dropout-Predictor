@@ -32,13 +32,13 @@ scaler = art["scaler"]
 features = art["features"]
 comparison = art["comparison"]
 
-st.title("🎓 Student Dropout Risk Predictor")
+st.title("Student Dropout Predictor")
 st.caption(
     "Predicting dropout risk for Nigerian university students · "
     "Undergraduate Final Year Project"
 )
 
-tab1, tab2, tab3 = st.tabs(["🔮 Predict", "📊 Model Comparison", "ℹ️ About"])
+tab1, tab2, tab3 = st.tabs(["Predict", "Model Comparison", "ℹAbout"])
 
 # ============================================================
 # TAB 1 — PREDICTION (grouped sections)
@@ -56,7 +56,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 📇 SECTION 1 — PERSONAL INFORMATION
     # ------------------------------------------------------------------
-    st.markdown("### 📇 1. Personal Information")
+    st.markdown("### 1. Personal Information")
     c1, c2, c3 = st.columns(3)
     with c1:
         user_input["Gender"] = GENDER[
@@ -80,7 +80,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 🎓 SECTION 2 — EDUCATIONAL BACKGROUND
     # ------------------------------------------------------------------
-    st.markdown("### 🎓 2. Educational Background")
+    st.markdown("### 2. Educational Background")
     c1, c2 = st.columns(2)
     with c1:
         user_input["Previous qualification"] = PREVIOUS_QUALIFICATION[
@@ -103,7 +103,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 👨‍👩‍👧 SECTION 3 — FAMILY BACKGROUND
     # ------------------------------------------------------------------
-    st.markdown("### 👨‍👩‍👧 3. Family Background")
+    st.markdown("### 3. Family Background")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Mother**")
@@ -125,7 +125,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 💰 SECTION 4 — FINANCIAL STATUS
     # ------------------------------------------------------------------
-    st.markdown("### 💰 4. Financial Status")
+    st.markdown("### 4. Financial Status")
     c1, c2, c3 = st.columns(3)
     with c1:
         user_input["Scholarship holder"] = YES_NO[
@@ -143,7 +143,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 📚 SECTION 5 — FIRST SEMESTER PERFORMANCE
     # ------------------------------------------------------------------
-    st.markdown("### 📚 5. First Semester Academic Performance")
+    st.markdown("### 5. First Semester Academic Performance")
     st.caption("A **curricular unit** = one course/subject on your semester result.")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -174,7 +174,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 📚 SECTION 6 — SECOND SEMESTER PERFORMANCE
     # ------------------------------------------------------------------
-    st.markdown("### 📚 6. Second Semester Academic Performance")
+    st.markdown("### 6. Second Semester Academic Performance")
     c1, c2, c3 = st.columns(3)
     with c1:
         user_input["Curricular units 2nd sem (enrolled)"] = st.number_input(
@@ -193,7 +193,7 @@ with tab1:
     # ------------------------------------------------------------------
     # 🌍 SECTION 7 — ECONOMIC CONTEXT
     # ------------------------------------------------------------------
-    st.markdown("### 🌍 7. Economic Context")
+    st.markdown("### 7. Economic Context")
     user_input["Inflation rate"] = st.number_input(
         "Inflation rate (%) during the academic year",
         -5.0, 50.0, 1.4, step=0.1,
@@ -209,7 +209,7 @@ with tab1:
     # 🔮 PREDICT BUTTON
     # ------------------------------------------------------------------
     st.markdown("---")
-    if st.button("🔮 Predict Dropout Risk", type="primary", use_container_width=True):
+    if st.button("Predict Dropout Risk", type="primary", use_container_width=True):
         # make sure columns are in the exact training order
         X = pd.DataFrame([user_input])[features]
         X_scaled = scaler.transform(X)
@@ -254,7 +254,7 @@ with tab2:
     )
     st.caption(f"✅ Best model by ROC-AUC: **{best_name}**")
 
-    st.markdown("### 📈 Visualisations")
+    st.markdown("### Visualisations")
     for img, cap in [
         ("comparison_bars.png", "Metric comparison across the three models"),
         ("roc_curves.png", "ROC curves and AUC scores"),
@@ -266,7 +266,7 @@ with tab2:
         except Exception:
             st.info(f"Run `python train.py` first to generate **{img}**.")
 
-    st.markdown("### 📝 Interpretation of the results")
+    st.markdown("### Interpretation of the results")
     st.markdown(
         """
         - **Logistic Regression** — a linear, fully interpretable baseline.
