@@ -190,20 +190,6 @@ with tab1:
     st.caption(f"Grade: **{nigerian_grade_label(pct2)}**")
     user_input["Curricular units 2nd sem (grade)"] = percentage_to_portuguese(pct2)
 
-    # ------------------------------------------------------------------
-    # 🌍 SECTION 7 — ECONOMIC CONTEXT
-    # ------------------------------------------------------------------
-    st.markdown("### 7. Economic Context")
-    user_input["Inflation rate"] = st.number_input(
-        "Inflation rate (%) during the academic year",
-        -5.0, 50.0, 1.4, step=0.1,
-        help=(
-            "The national inflation rate for that year. Nigeria's recent "
-            "inflation has been high (25–35%), but the model was trained on "
-            "data with inflation between about -1% and 4%. Keeping a value "
-            "in that range gives the most reliable prediction."
-        )
-    )
 
     # ------------------------------------------------------------------
     # 🔮 PREDICT BUTTON
