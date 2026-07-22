@@ -38,6 +38,10 @@ st.caption(
     "using Logistic Regression, Support Vector Machine, Random Forest, and ensemble learning. "
     "By IYIMOGA JOSEPH NANA"
 )
+st.info(
+    "This tool estimates dropout risk from academic, financial, family, and personal factors. "
+    "Use the result as an early-warning guide, not as a final decision about any student."
+)
 
 tab1, tab2, tab3 = st.tabs(["Predict", "Model Comparison", "About"])
 
@@ -45,11 +49,19 @@ tab1, tab2, tab3 = st.tabs(["Predict", "Model Comparison", "About"])
 # TAB 1 — PREDICTION (grouped sections)
 # ============================================================
 with tab1:
+    st.markdown("### Recommended prediction model")
+    st.success(
+        f"The system currently uses **{best_name}** as the recommended ensemble model "
+        "because it achieved the highest ROC-AUC during evaluation."
+    )
     model_choice = st.selectbox(
         "Select prediction model",
         list(all_models.keys()),
         index=list(all_models.keys()).index(best_name),
-        help=f"Default is the best-performing model by ROC-AUC: {best_name}",
+        help=(
+            f"Default is the selected ensemble model: {best_name}. "
+            "The other models are available for academic comparison."
+        ),
     )
 
     user_input = {}
@@ -218,12 +230,13 @@ with tab1:
         proba = model.predict_proba(X_scaled)[0, 1]
         pred = int(proba >= 0.5)
 
+        risk_level = "High" if proba >= 0.7 else "Moderate" if proba >= 0.4 else "Low"
+
         st.markdown("## Result")
         c1, c2, c3 = st.columns(3)
         c1.metric("Model Used", model_choice)
         c2.metric("Dropout Probability", f"{proba*100:.1f}%")
-        c3.metric("Prediction",
-                  "At Risk" if pred else "Likely to Graduate")
+        c3.metric("Risk Level", risk_level)
 
         st.progress(float(proba))
 
@@ -243,11 +256,38 @@ with tab1:
                 "Keep up the good work!"
             )
 
+        st.markdown("### Suggested support actions")
+        if proba >= 0.7:
+            st.markdown(
+                """
+                - Meet an academic adviser within the week.
+                - Review unpaid fees, scholarship options, or emergency financial aid.
+                - Create a study recovery plan for failed or missed courses.
+                - Assign a mentor or course representative for weekly follow-up.
+                """
+            )
+        elif proba >= 0.4:
+            st.markdown(
+                """
+                - Monitor attendance, coursework, and semester performance closely.
+                - Join a study group or tutorial session for difficult courses.
+                - Speak with a level adviser before small issues become serious.
+                """
+            )
+        else:
+            st.markdown(
+                """
+                - Maintain current academic habits.
+                - Keep fees and registration records up to date.
+                - Seek support early if academic, financial, or personal pressure increases.
+                """
+            )
+
 # ============================================================
 # TAB 2 — MODEL COMPARISON
 # ============================================================
 with tab2:
-    st.subheader("Performance of base learners and ensemble models on the test set")
+    st.subheader("Performance of base learners and the selected ensemble model on the test set")
     numeric_cols = comparison.select_dtypes("number").columns
     st.dataframe(
         comparison.style.highlight_max(axis=0, color='#c7e9c0')
@@ -258,7 +298,7 @@ with tab2:
 
     st.markdown("### Visualisations")
     for img, cap in [
-        ("dataset/comparison_bars.png", "Metric comparison across the base learners and ensemble models"),
+        ("dataset/comparison_bars.png", "Metric comparison across the base learners and selected ensemble model"),
         ("dataset/roc_curves.png", "ROC curves and AUC scores"),
         ("dataset/confusion_matrices.png", "Confusion matrices (actual vs predicted)"),
         ("dataset/mi_scores.png", "Top features by Mutual Information score"),
@@ -276,9 +316,6 @@ with tab2:
           non-linear interactions between student features.
         - **Support Vector Machine (RBF kernel)** - a margin-based model
           that separates complex dropout and graduate patterns.
-        - **Soft Voting Ensemble** - combines Logistic Regression, Support
-          Vector Machine, and Random Forest by averaging their predicted
-          probabilities.
         - **Stacking Ensemble** - combines the three base models using a
           second-level Logistic Regression meta-model. This is the selected
           best model because it achieved the highest ROC-AUC.

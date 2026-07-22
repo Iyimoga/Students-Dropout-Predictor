@@ -13,7 +13,7 @@ import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier, StackingClassifier, VotingClassifier
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -174,22 +174,6 @@ def main():
     }
 
     ensemble_models = {
-        "Soft Voting Ensemble": VotingClassifier(
-            estimators=[
-                ("lr", LogisticRegression(max_iter=2000, random_state=RANDOM_STATE)),
-                ("svm", SVC(kernel="rbf", probability=True, random_state=RANDOM_STATE)),
-                (
-                    "rf",
-                    RandomForestClassifier(
-                        n_estimators=300,
-                        random_state=RANDOM_STATE,
-                        class_weight="balanced",
-                        n_jobs=-1,
-                    ),
-                ),
-            ],
-            voting="soft",
-        ),
         "Stacking Ensemble": StackingClassifier(
             estimators=[
                 ("lr", LogisticRegression(max_iter=2000, random_state=RANDOM_STATE)),
