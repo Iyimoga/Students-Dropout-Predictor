@@ -110,6 +110,20 @@ with tab1:
                 help="Your admission route (JAMB, Direct Entry, Transfer, etc.)"
             )]
 
+    c1, c2 = st.columns(2)
+    with c1:
+        user_input["Application order"] = st.number_input(
+            "Admission choice order", 1, 9, 1, step=1,
+            help="Use 1 if this course/university was your first choice."
+        )
+    with c2:
+        attendance = st.selectbox(
+            "Study mode",
+            ["Daytime / full-time", "Evening / part-time"],
+            help="Select the attendance mode closest to the student's programme."
+        )
+        user_input["Daytime/evening attendance"] = 1 if attendance == "Daytime / full-time" else 0
+
     user_input["Course"] = COURSE[
         st.selectbox("Course / Programme of study", list(COURSE.keys()))]
 
@@ -199,6 +213,17 @@ with tab1:
         user_input["Curricular units 2nd sem (approved)"] = st.number_input(
             "Courses passed", 0, 20, 6, key="a2")
 
+    c1, c2 = st.columns(2)
+    with c1:
+        user_input["Curricular units 2nd sem (credited)"] = st.number_input(
+            "Courses credited/exempted", 0, 20, 0, key="c2",
+            help="Courses accepted as transferred credits or exemptions."
+        )
+    with c2:
+        user_input["Curricular units 2nd sem (without evaluations)"] = st.number_input(
+            "Courses missed completely (no score at all)",
+            0, 20, 0, key="w2")
+
     pct2 = st.slider("Average score (%) — 2nd semester", 0, 100, 65, key="g2")
     st.caption(f"Grade: **{nigerian_grade_label(pct2)}**")
     user_input["Curricular units 2nd sem (grade)"] = percentage_to_portuguese(pct2)
@@ -223,6 +248,14 @@ with tab1:
     # ------------------------------------------------------------------
     st.markdown("---")
     if st.button("Predict Dropout Risk", type="primary", use_container_width=True):
+        missing_features = [feature for feature in features if feature not in user_input]
+        if missing_features:
+            st.error(
+                "The prediction form is missing required model fields: "
+                + ", ".join(missing_features)
+            )
+            st.stop()
+
         # make sure columns are in the exact training order
         X = pd.DataFrame([user_input])[features]
         X_scaled = scaler.transform(X)
