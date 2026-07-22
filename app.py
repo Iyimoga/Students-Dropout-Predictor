@@ -11,7 +11,7 @@ from nigerian_labels import (
     PARENT_OCCUPATION, percentage_to_portuguese, nigerian_grade_label,
 )
 
-st.set_page_config(page_title="Student Dropout Predictor",
+st.set_page_config(page_title="Ensemble Student Dropout Predictor",
                    page_icon="🎓", layout="wide")
 
 # ---------- load artifacts ----------
@@ -32,13 +32,14 @@ scaler = art["scaler"]
 features = art["features"]
 comparison = art["comparison"]
 
-st.title("Student Dropout Predictor")
+st.title("Ensemble Student Dropout Predictor")
 st.caption(
     "Predicting dropout risk for Nigerian university students · "
+    "using Logistic Regression, Support Vector Machine, Random Forest, and ensemble learning. "
     "By IYIMOGA JOSEPH NANA"
 )
 
-tab1, tab2, tab3 = st.tabs(["Predict", "Model Comparison", "ℹAbout"])
+tab1, tab2, tab3 = st.tabs(["Predict", "Model Comparison", "About"])
 
 # ============================================================
 # TAB 1 — PREDICTION (grouped sections)
@@ -48,7 +49,7 @@ with tab1:
         "Select prediction model",
         list(all_models.keys()),
         index=list(all_models.keys()).index(best_name),
-        help=f"Default is the best-performing model: {best_name}",
+        help=f"Default is the best-performing model by ROC-AUC: {best_name}",
     )
 
     user_input = {}
@@ -222,7 +223,7 @@ with tab1:
         c1.metric("Model Used", model_choice)
         c2.metric("Dropout Probability", f"{proba*100:.1f}%")
         c3.metric("Prediction",
-                  "⚠️ At Risk" if pred else "✅ Likely to Graduate")
+                  "At Risk" if pred else "Likely to Graduate")
 
         st.progress(float(proba))
 
@@ -246,37 +247,41 @@ with tab1:
 # TAB 2 — MODEL COMPARISON
 # ============================================================
 with tab2:
-    st.subheader("Performance of the three models on the test set")
+    st.subheader("Performance of base learners and ensemble models on the test set")
+    numeric_cols = comparison.select_dtypes("number").columns
     st.dataframe(
         comparison.style.highlight_max(axis=0, color='#c7e9c0')
-                        .format("{:.4f}"),
+                        .format("{:.4f}", subset=numeric_cols),
         use_container_width=True,
     )
     st.caption(f"✅ Best model by ROC-AUC: **{best_name}**")
 
     st.markdown("### Visualisations")
     for img, cap in [
-        ("comparison_bars.png", "Metric comparison across the three models"),
-        ("roc_curves.png", "ROC curves and AUC scores"),
-        ("confusion_matrices.png", "Confusion matrices (actual vs predicted)"),
-        ("mi_scores.png", "Top features by Mutual Information score"),
+        ("dataset/comparison_bars.png", "Metric comparison across the base learners and ensemble models"),
+        ("dataset/roc_curves.png", "ROC curves and AUC scores"),
+        ("dataset/confusion_matrices.png", "Confusion matrices (actual vs predicted)"),
+        ("dataset/mi_scores.png", "Top features by Mutual Information score"),
     ]:
         try:
             st.image(img, caption=cap)
         except Exception:
-            st.info(f"Run `python train.py` first to generate **{img}**.")
+            st.info(f"Run `python train_ensemble.py` first to generate **{img}**.")
 
     st.markdown("### Interpretation of the results")
     st.markdown(
         """
-        - **Logistic Regression** — a linear, fully interpretable baseline.
-          Each feature's effect can be read directly from its coefficient.
-        - **Random Forest** — an ensemble of decision trees that captures
-          non-linear interactions between features. Best overall accuracy
-          and ROC-AUC in this project.
-        - **Support Vector Machine (RBF kernel)** — a margin-based method
-          that achieved the **highest precision** (fewest false alarms) but
-          slightly lower recall.
+        - **Logistic Regression** - a linear, interpretable baseline model.
+        - **Random Forest** - an ensemble of decision trees that captures
+          non-linear interactions between student features.
+        - **Support Vector Machine (RBF kernel)** - a margin-based model
+          that separates complex dropout and graduate patterns.
+        - **Soft Voting Ensemble** - combines Logistic Regression, Support
+          Vector Machine, and Random Forest by averaging their predicted
+          probabilities.
+        - **Stacking Ensemble** - combines the three base models using a
+          second-level Logistic Regression meta-model. This is the selected
+          best model because it achieved the highest ROC-AUC.
         """
     )
 
@@ -288,7 +293,7 @@ with tab3:
         """
         ### About this project
 
-        A machine learning system that predicts the likelihood that a
+        An ensemble machine learning system that predicts the likelihood that a
         university student will drop out, based on their demographic,
         family, financial, and academic-performance information.
 
